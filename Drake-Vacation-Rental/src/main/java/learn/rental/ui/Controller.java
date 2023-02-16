@@ -2,17 +2,29 @@ package learn.rental.ui;
 
 
 import learn.rental.data.DataException;
+import learn.rental.domain.GuestService;
+import learn.rental.domain.HostService;
+import learn.rental.domain.ReservationService;
+import learn.rental.models.Host;
+import learn.rental.models.Reservation;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 
 @Component
 public class Controller {
 
-    //private final PanelService service;
+    private final GuestService guestService;
+    private final HostService hostService;
+    private final ReservationService reservationService;
 
     private final View view;
 
-    public Controller(View view) {
+    public Controller(GuestService guestService, HostService hostService, ReservationService reservationService, View view) {
+        this.guestService = guestService;
+        this.hostService = hostService;
+        this.reservationService = reservationService;
         this.view = view;
     }
 
@@ -52,9 +64,23 @@ public class Controller {
 
     private void viewReservation() throws DataException {
         view.printHeader(MenuOption.VIEW_RESERVATIONS.getMessage());
+        Host host = getHost();
+        if(host == null) {
+            view.printMessage("No Host Found");
+            return;
+        }
+        List<Reservation> reservations = reservationService.findByHost(host.getHostId());
+        view.displayReservationsByHost(reservations);
+        view.enterToContinue();
     }
 
 
+
+    private Host getHost() throws DataException {
+        String email = view.getEmail(true);
+        Host host = hostService.findByEmail(email);
+        return host;
+    }
 
 
     private void addReservation() throws DataException {

@@ -42,15 +42,15 @@ public class HostFileRepository implements HostRepository {
     }
 
     @Override
-    public List<Host> findByEmail(String email) throws DataException {
+    public Host findByEmail(String email) throws DataException {
         return findAll().stream()
                 .filter(i -> i.getEmail().equalsIgnoreCase(email))
-                .collect(Collectors.toList());
+                .findFirst().orElse(null);
     }
 
     private Host deserialize(String[] fields) {
         Host result = new Host();
-        result.setHostId(Integer.parseInt(fields[0]));
+        result.setHostId(fields[0]);
         result.setLastName(fields[1]);
         result.setEmail(fields[2]);
         result.setPhoneNumber(fields[3]);

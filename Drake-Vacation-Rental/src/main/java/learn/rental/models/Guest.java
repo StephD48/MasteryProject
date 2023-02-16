@@ -27,7 +27,7 @@ public class Guest {
         return guestId;
     }
 
-    public void setGuestId(int id) {
+    public void setGuestId(int guestId) {
         this.guestId = guestId;
     }
 

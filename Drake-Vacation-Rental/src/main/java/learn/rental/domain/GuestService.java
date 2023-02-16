@@ -3,6 +3,7 @@ package learn.rental.domain;
 import learn.rental.data.DataException;
 import learn.rental.data.GuestRepository;
 import learn.rental.models.Guest;
+import learn.rental.models.Host;
 import org.springframework.stereotype.Service;
 
 
@@ -17,9 +18,10 @@ public class GuestService {
         this.repository = repository;
     }
 
-    public List<Guest> findByEmail(String email) throws DataException {
-        return repository.findAll().stream()
-                .filter(i -> i.getEmail().equalsIgnoreCase(email))
-                .collect(Collectors.toList());
+    public Guest findByEmail(String email) throws DataException {
+        return repository.findByEmail(email);
+
     }
+
+
 }

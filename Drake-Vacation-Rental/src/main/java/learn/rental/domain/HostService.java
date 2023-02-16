@@ -19,9 +19,8 @@ public class HostService {
         this.repository = repository;
     }
 
-    public List<Host> findByEmail(String email) throws DataException {
-        return repository.findAll().stream()
-                .filter(i -> i.getEmail().equalsIgnoreCase(email))
-                .collect(Collectors.toList());
+    public Host findByEmail(String email) throws DataException {
+        return repository.findByEmail(email);
+
     }
 }

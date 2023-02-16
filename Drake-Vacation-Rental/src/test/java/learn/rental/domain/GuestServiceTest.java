@@ -23,13 +23,13 @@ class GuestServiceTest {
 
     @Test
     void shouldNotFindByEmail() throws DataException {
-        List<Guest> result = service.findByEmail("");
+        Guest result = service.findByEmail("");
         assertNotNull(result);
 
     }
     @Test
     void shouldFindByEmail() throws DataException {
-        List<Guest> email = service.findByEmail("chloed@.com");
+        Guest email = service.findByEmail("chloed@.com");
         assertNotNull(email);
 
     }

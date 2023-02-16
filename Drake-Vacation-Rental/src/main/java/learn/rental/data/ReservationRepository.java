@@ -8,11 +8,9 @@ import java.util.List;
 
 public interface ReservationRepository {
 
-    List<Reservation> findByHost(Host hostId);
-
     List<Reservation> findByHost(String hostId);
 
-    Reservation add(Reservation reservation);
+    Reservation add(Reservation reservation) throws DataException;
 
     boolean update(Reservation reservation);
 

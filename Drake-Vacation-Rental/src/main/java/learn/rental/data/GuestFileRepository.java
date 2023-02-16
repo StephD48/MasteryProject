@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class GuestFileRepository implements GuestRepository {
@@ -41,11 +40,13 @@ public class GuestFileRepository implements GuestRepository {
         }
 
 
+
+
     @Override
-    public List<Guest> findByEmail(String email) throws DataException {
+    public Guest findByEmail(String email) throws DataException {
         return findAll().stream()
                 .filter(i -> i.getEmail().equalsIgnoreCase(email))
-                .collect(Collectors.toList());
+                .findFirst().orElse(null);
     }
 
     private Guest deserialize(String[] fields) {

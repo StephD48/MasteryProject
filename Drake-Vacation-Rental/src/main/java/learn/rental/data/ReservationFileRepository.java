@@ -3,6 +3,7 @@ package learn.rental.data;
 import learn.rental.models.Guest;
 import learn.rental.models.Host;
 import learn.rental.models.Reservation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.io.*;
@@ -20,13 +21,15 @@ public class ReservationFileRepository implements ReservationRepository {
 
     private final String directory;
 
-    public ReservationFileRepository(String directory) {
+    public ReservationFileRepository(@Value("${dataFileReservationPath}") String directory) {
         this.directory = directory;
     }
 
-    private String getFilePath(Host hostId) {
-        return Paths.get(directory,hostId + "csv").toString();
+
+    private String getFilePath(String hostId) {
+        return Paths.get(directory,hostId + ".csv").toString();
     }
+
 
     @Override
     public List<Reservation> findByHost(String hostId) {
@@ -38,8 +41,9 @@ public class ReservationFileRepository implements ReservationRepository {
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
 
                 String[] fields = line.split(",", -1);
-                if (fields.length == 8) {
-                    result.add(deserialize(fields,LocalDate, hostId));
+                if (fields.length == 5) {
+
+                    result.add(deserialize(fields, hostId));
                 }
             }
         } catch (IOException ex) {
@@ -49,20 +53,7 @@ public class ReservationFileRepository implements ReservationRepository {
     }
 
 
-
-    @Override
-    public Reservation add(Reservation reservation) {
-        return null;
-    }
-    @Override
-    public boolean update(Reservation reservation) {
-        return false;
-    }
-    @Override
-    public Reservation delete(Reservation reservation) {
-        return null;
-    }
-    private void writeAll(List<Reservation> reservations, Host hostId) throws DataException {
+    private void writeAll(List<Reservation> reservations, String hostId) throws DataException {
         try (PrintWriter writer = new PrintWriter(getFilePath(hostId))) {
 
             writer.println(HEADER);
@@ -75,29 +66,63 @@ public class ReservationFileRepository implements ReservationRepository {
 
         }
     }
+    @Override
+    public Reservation add(Reservation reservation) throws DataException {
+       List<Reservation> all = findAll();
+       int nextId = getNextId(all);
+       reservation.setReservationId(nextId);
+       all.add(reservation);
+        return reservation;
+    }
+
+    private int getNextId(List<Reservation> all) {
+        return getNextId(all);
+    }
+
+
+    private List<Reservation> findAll() {
+        return null;
+    }
+
+
+    @Override
+    public boolean update(Reservation reservation) {
+        return false;
+    }
+
+
+    @Override
+    public Reservation delete(Reservation reservation) {
+        return null;
+    }
+
+
     private String serialize(Reservation reservation) {
-        return String.format("%s,%s,%s,%s,%s",
+        return String.format("%s,%s,%s,%s,%s,%s",
                 reservation.getReservationId(),
                 reservation.getHost().getHostId(),
                 reservation.getGuest().getGuestId(),
                 reservation.getStartDate(),
-                reservation.getEndDate());
+                reservation.getEndDate(),
+                reservation.getTotal());
+
+
 
     }
 
-    private Reservation deserialize(String[] fields, LocalDate date, String hostId) {
+    private Reservation deserialize(String[] fields,String hostId) {
         Reservation result = new Reservation();
         result.setReservationId(Integer.parseInt(fields[0]));
-        result.setStartDate(date);
-        result.setEndDate(date);
-        result.setTotal(new BigDecimal(fields[3]));
+        result.setStartDate(LocalDate.parse(fields[1]));
+        result.setEndDate(LocalDate.parse(fields[2]));
+        result.setTotal(new BigDecimal(fields[4]));
 
         Guest guest = new Guest();
-        guest.setGuestId(Integer.parseInt(fields[1]));
+        guest.setGuestId(Integer.parseInt(fields[3]));
         result.setGuest(guest);
 
         Host host = new Host();
-        host.setHostId(Integer.parseInt(fields[2]));
+        host.setHostId(hostId);
         result.setHost(host);
         return result;
     }

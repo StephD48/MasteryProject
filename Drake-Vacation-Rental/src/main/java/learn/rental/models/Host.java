@@ -6,7 +6,7 @@ public class Host {
 
 
 
-    private int hostId;
+    private String hostId;
     private String lastName;
     private String email;
     private String phoneNumber;
@@ -17,7 +17,7 @@ public class Host {
     private BigDecimal standardRate;
     private BigDecimal weekendRate;
 
-    public Host(int hostId, String lastName, String email, String phoneNumber, String address, String city, String state,
+    public Host(String hostId, String lastName, String email, String phoneNumber, String address, String city, String state,
                 int postalCode, BigDecimal standardRate, BigDecimal weekendRate) {
         this.hostId = hostId;
         this.lastName = lastName;
@@ -35,11 +35,11 @@ public class Host {
 
     }
 
-    public int getHostId() {
+    public String getHostId() {
         return hostId;
     }
 
-    public void setHostId(int id) {
+    public void setHostId(String hostId) {
         this.hostId = hostId;
     }
 

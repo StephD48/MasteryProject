@@ -8,7 +8,10 @@ import java.util.stream.Collectors;
 
 public class GuestRepositoryDouble implements GuestRepository{
 
+    GuestRepositoryDouble repository = new GuestRepositoryDouble();
+
     private final ArrayList<Guest> guests = new ArrayList<>();
+
     @Override
     public List<Guest> findAll() {
         return guests;
@@ -16,9 +19,7 @@ public class GuestRepositoryDouble implements GuestRepository{
 
 
     @Override
-    public List<Guest> findByEmail(String email)  throws DataException {
-        return guests.stream()
-                .filter(i -> i.getEmail().equalsIgnoreCase(email))
-                .collect(Collectors.toList());
+    public Guest findByEmail(String email)  throws DataException {
+        return repository.findByEmail(email);
     }
 }
