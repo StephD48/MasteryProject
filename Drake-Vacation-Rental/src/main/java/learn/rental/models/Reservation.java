@@ -15,7 +15,8 @@ public class Reservation {
     private String guestId;
     private Guest guest;
 
-    public Reservation(int reservationId, LocalDate startDate, LocalDate endDate, BigDecimal total, String hostId, Host host, String guestId, Guest guest) {
+
+   /* public Reservation(int reservationId, LocalDate startDate, LocalDate endDate, BigDecimal total, String hostId, Host host, String guestId, Guest guest) {
         this.reservationId = reservationId;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -24,11 +25,11 @@ public class Reservation {
         this.host = host;
         this.guestId = guestId;
         this.guest = guest;
-    }
+    }*/
 
-    public Reservation() {
+    /*public Reservation() {
 
-    }
+    }*/
 
     public int getReservationId() {
         return reservationId;
@@ -94,11 +95,13 @@ public class Reservation {
         this.guest = guest;
     }
 
-/* public BigDecimal getValue() {
-        if (item == null || item.getDollarPerKilogram() == null) {
+
+
+/* public BigDecimal getTotal() {
+        if (resevation == null || reservation.getTotal() == null) {
             return BigDecimal.ZERO;
         }
-        BigDecimal kilos = new BigDecimal(kilograms).setScale(4, RoundingMode.HALF_UP);
+        BigDecimal total = new BigDecimal(d).setScale(4, RoundingMode.HALF_UP);
         return item.getDollarPerKilogram().multiply(kilos);
     }*/
 }

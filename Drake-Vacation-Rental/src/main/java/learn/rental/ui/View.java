@@ -5,6 +5,7 @@ import learn.rental.models.Host;
 import learn.rental.models.Reservation;
 import org.springframework.stereotype.Component;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,6 +16,7 @@ public class View {
 
     private final ConsoleIO io;
 
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     public View(ConsoleIO io) {
         this.io = io;
     }
@@ -58,11 +60,13 @@ public class View {
             r.getGuest().getEmail(),
             r.getHost().getEmail(),
             r.getStartDate(),
-            r.getEndDate(),
+            r.getStartDate(),
             r.getTotal());
 
         }
     }
+
+
 
 
     public String getEmail(boolean isHost) {
@@ -74,6 +78,8 @@ public class View {
     public void enterToContinue() {
         io.readString("Press [Enter} to continue");
     }
+
+
 
 
     public Host chooseHost(List<Host> hosts) {
@@ -96,6 +102,26 @@ public class View {
         }
         return host;
         
+    }
+
+
+    public Reservation addReservation() {
+        Reservation reservation = new Reservation();
+        reservation.setStartDate(io.readLocalDate("Enter a Start Date"));
+        reservation.setEndDate(io.readLocalDate("Enter a End Date"));
+        reservation.setGuestId(io.readRequiredString("Enter Guest Id"));
+        reservation.setTotal(io.readBigDecimal("Total for Stay"));
+        return reservation;
+    }
+
+    public void displayStatus(boolean success, List<String> messages) {
+        printHeader(success ? "Success" : "Error");
+        for (String message : messages) {
+            io.println(message);
+        }
+    }
+    public void displayStatus(boolean success, String message) {
+        displayStatus(success, List.of(message));
     }
 
 

@@ -52,6 +52,16 @@ public class ReservationFileRepository implements ReservationRepository {
         return result;
     }
 
+    @Override
+    public Reservation add(Reservation reservation) throws DataException {
+        List<Reservation> all = findByHost(reservation.getHostId());
+        int nextId = getNextId(all);
+        reservation.setReservationId(nextId);
+        all.add(reservation);
+        writeAll(all, reservation.getHostId());
+        return reservation;
+    }
+
 
     private void writeAll(List<Reservation> reservations, String hostId) throws DataException {
         try (PrintWriter writer = new PrintWriter(getFilePath(hostId))) {
@@ -66,23 +76,17 @@ public class ReservationFileRepository implements ReservationRepository {
 
         }
     }
-    @Override
-    public Reservation add(Reservation reservation) throws DataException {
-       List<Reservation> all = findAll();
-       int nextId = getNextId(all);
-       reservation.setReservationId(nextId);
-       all.add(reservation);
-        return reservation;
+
+    private int getNextId(List<Reservation> reservations) {
+        int maxId = 0;
+        for (Reservation reservation : reservations) {
+            if (maxId < reservation.getReservationId()) {
+                maxId = reservation.getReservationId();
+            }
+        }
+        return maxId + 1;
     }
 
-    private int getNextId(List<Reservation> all) {
-        return getNextId(all);
-    }
-
-
-    private List<Reservation> findAll() {
-        return null;
-    }
 
 
     @Override
@@ -91,10 +95,6 @@ public class ReservationFileRepository implements ReservationRepository {
     }
 
 
-    @Override
-    public Reservation delete(Reservation reservation) {
-        return null;
-    }
 
 
     private String serialize(Reservation reservation) {
@@ -117,13 +117,17 @@ public class ReservationFileRepository implements ReservationRepository {
         result.setEndDate(LocalDate.parse(fields[2]));
         result.setTotal(new BigDecimal(fields[4]));
 
+        Host host = new Host();
+        host.setHostId(hostId);
+        result.setHost(host);
+
+
         Guest guest = new Guest();
         guest.setGuestId(Integer.parseInt(fields[3]));
         result.setGuest(guest);
 
-        Host host = new Host();
-        host.setHostId(hostId);
-        result.setHost(host);
-        return result;
+       return result;
     }
+
+
 }

@@ -1,7 +1,6 @@
 package learn.rental.data;
 
 import learn.rental.models.Guest;
-import learn.rental.models.Host;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 

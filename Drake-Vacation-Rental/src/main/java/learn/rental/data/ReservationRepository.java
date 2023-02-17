@@ -14,5 +14,5 @@ public interface ReservationRepository {
 
     boolean update(Reservation reservation);
 
-    Reservation delete(Reservation reservation);
+
 }

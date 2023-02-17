@@ -19,7 +19,8 @@ public class ReservationRepositoryDouble implements ReservationRepository{
 
     @Override
     public Reservation add(Reservation reservation) {
-        return null;
+       reservations.add(reservation);
+       return reservation;
     }
 
     @Override
@@ -28,7 +29,7 @@ public class ReservationRepositoryDouble implements ReservationRepository{
     }
 
     @Override
-    public Reservation delete(Reservation reservation) {
+    public Reservation deleteById(int reservationId) {
         return null;
     }
 }

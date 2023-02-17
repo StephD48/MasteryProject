@@ -2,7 +2,7 @@ package learn.rental.data;
 
 
 
-import learn.rental.models.Guest;
+
 import learn.rental.models.Host;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

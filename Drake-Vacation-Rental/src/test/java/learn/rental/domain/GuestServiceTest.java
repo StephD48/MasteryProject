@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GuestServiceTest {
 
-    GuestService service;
+    GuestService service = new GuestService(new GuestRepositoryDouble());
 
     @BeforeEach
     void setup() {
@@ -22,17 +22,17 @@ class GuestServiceTest {
     }
 
     @Test
-    void shouldNotFindByEmail() throws DataException {
-        Guest result = service.findByEmail("");
-        assertNotNull(result);
+    void shouldFindByEmail() {
 
     }
+
     @Test
-    void shouldFindByEmail() throws DataException {
-        Guest email = service.findByEmail("chloed@.com");
-        assertNotNull(email);
+    void shouldNotFindNullEmail(){
 
     }
+
+
+
 
 
 

@@ -40,8 +40,6 @@ public class GuestFileRepository implements GuestRepository {
         }
 
 
-
-
     @Override
     public Guest findByEmail(String email) throws DataException {
         return findAll().stream()

@@ -5,6 +5,8 @@ import learn.rental.data.DataException;
 import learn.rental.domain.GuestService;
 import learn.rental.domain.HostService;
 import learn.rental.domain.ReservationService;
+import learn.rental.domain.Result;
+import learn.rental.models.Guest;
 import learn.rental.models.Host;
 import learn.rental.models.Reservation;
 import org.springframework.stereotype.Component;
@@ -82,16 +84,26 @@ public class Controller {
         return host;
     }
 
+    private Guest getGuest() throws DataException {
+        String email = view.getEmail(true);
+        Guest guest = guestService.findByEmail(email);
+        return guest;
+    }
+
 
     private void addReservation() throws DataException {
         view.printHeader(MenuOption.ADD_RESERVATION.getMessage());
-        /*Panel panel = view.createPanel();
-        PanelResult result = service.addPanel(panel);
-        if (result.isSuccess()) {
-            view.printResult(result, "Panel Id %s added.%n");
-        } else {
-            view.displayError(result.getMessages());
-        }*/
+        Reservation reservation = view.addReservation();
+        Result<Reservation> result = reservationService.add(reservation);
+        if(!result.isSuccess()) {
+            view.displayStatus(false, result.getErrorMessages());
+        }else{
+            String message = String.format("Reservation %s created.", result.getPayload().getReservationId());
+            view.displayStatus(true, message);
+        }
+
+
+
     }
 
     private void editReservation() throws DataException {

@@ -6,8 +6,6 @@ import learn.rental.data.HostRepository;
 import learn.rental.models.Host;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 

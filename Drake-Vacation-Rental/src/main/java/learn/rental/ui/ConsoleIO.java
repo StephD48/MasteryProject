@@ -23,6 +23,7 @@ public class ConsoleIO {
             = "[INVALID] Enter a date in MM/dd/yyyy format.";
 
     private final Scanner scanner = new Scanner(System.in);
+
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     public void print(String message) {
@@ -108,7 +109,7 @@ public class ConsoleIO {
         while (true) {
             String input = readRequiredString(prompt);
             try {
-                return LocalDate.parse(input, formatter);
+                return LocalDate.parse(input,formatter);
             } catch (DateTimeParseException ex) {
                 println(INVALID_DATE);
             }

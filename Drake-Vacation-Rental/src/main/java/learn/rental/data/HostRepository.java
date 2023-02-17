@@ -10,4 +10,6 @@ public interface HostRepository {
     List<Host> findAll() throws DataException;
 
     Host findByEmail(String email) throws DataException;
+
+
 }
