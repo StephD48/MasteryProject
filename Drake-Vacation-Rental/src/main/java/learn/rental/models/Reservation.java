@@ -10,9 +10,9 @@ public class Reservation {
     private LocalDate startDate;
     private LocalDate endDate;
     private BigDecimal total;
-    private String hostId;
+
     private Host host;
-    private String guestId;
+
     private Guest guest;
 
 
@@ -63,14 +63,6 @@ public class Reservation {
         this.total = total;
     }
 
-    public String getHostId() {
-        return hostId;
-    }
-
-    public void setHostId(String hostId) {
-        this.hostId = hostId;
-    }
-
     public Host getHost() {
         return host;
     }
@@ -79,13 +71,6 @@ public class Reservation {
         this.host = host;
     }
 
-    public String getGuestId() {
-        return guestId;
-    }
-
-    public void setGuestId(String guestId) {
-        this.guestId = guestId;
-    }
 
     public Guest getGuest() {
         return guest;

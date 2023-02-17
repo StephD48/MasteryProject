@@ -54,12 +54,24 @@ public class ReservationFileRepository implements ReservationRepository {
 
     @Override
     public Reservation add(Reservation reservation) throws DataException {
-        List<Reservation> all = findByHost(reservation.getHostId());
+        List<Reservation> all = findByHost(reservation.getHost().getHostId());
         int nextId = getNextId(all);
         reservation.setReservationId(nextId);
         all.add(reservation);
-        writeAll(all, reservation.getHostId());
+        writeAll(all, reservation.getHost().getHostId());
         return reservation;
+    }
+    @Override
+    public boolean  update(Reservation reservation) throws DataException {
+        List<Reservation> all = findByHost(reservation.getHost().getHostId());
+        for (int i = 0; i < all.size(); i++) {
+            if (all.get(i).getHost().getHostId().equals(reservation.getHost().getHostId())) {
+                all.set(i, reservation);
+                writeAll(all, reservation.getHost().getHostId());
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -87,16 +99,6 @@ public class ReservationFileRepository implements ReservationRepository {
         return maxId + 1;
     }
 
-
-
-    @Override
-    public boolean update(Reservation reservation) {
-        return false;
-    }
-
-
-
-
     private String serialize(Reservation reservation) {
         return String.format("%s,%s,%s,%s,%s,%s",
                 reservation.getReservationId(),
@@ -105,8 +107,6 @@ public class ReservationFileRepository implements ReservationRepository {
                 reservation.getStartDate(),
                 reservation.getEndDate(),
                 reservation.getTotal());
-
-
 
     }
 

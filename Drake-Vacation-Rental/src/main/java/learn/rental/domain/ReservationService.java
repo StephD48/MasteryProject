@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -40,49 +39,60 @@ public class ReservationService {
         for (Reservation reservation : result) {
             reservation.setGuest(guestMap.get(reservation.getGuest().getGuestId()));
             reservation.setHost(hostMap.get(reservation.getHost().getHostId()));
-
         }
         return result;
     }
 
     public Result<Reservation> add(Reservation reservation) throws DataException {
-        Result<Reservation> result = validate(reservation);
-        if(!result.isSuccess()) {
+       Result<Reservation> result = validate(reservation);
+        if (!result.isSuccess()) {
             return result;
         }
-        reservation.setGuest(guestRepository.findByEmail(reservation.getGuestId()));
-        reservation.setHost(hostRepository.findByEmail(reservation.getHostId()));
-        reservation.setTotal(calculateTotalCost(reservation.getHostId(), reservation));
+
         result.setPayload(reservationRepository.add(reservation));
         return result;
     }
 
-    private BigDecimal calculateTotalCost(String hostId, Reservation reservation) throws DataException {
-        Host host  = hostRepository.findByEmail(hostId);
+    public BigDecimal calculateTotalCost( Reservation reservation) throws DataException {
+        Host host = hostRepository.findByEmail(reservation.getHost().getEmail());
         BigDecimal standardRate = host.getStandardRate();
         BigDecimal weekendRate = host.getWeekendRate();
 
         LocalDate startDate = reservation.getStartDate();
         LocalDate endDate = reservation.getEndDate();
 
-        ArrayList<LocalDate> weekend = new ArrayList<>();
-        ArrayList<LocalDate> weekday = new ArrayList<>();
-
-        LocalDate date = startDate;
-        while((date.getDayOfWeek() != DayOfWeek.FRIDAY && date.getDayOfWeek() != DayOfWeek.SATURDAY) && date != endDate) {
-            weekday.add(date);
+        BigDecimal total = BigDecimal.ZERO;
+        while(startDate.isBefore(endDate) || startDate.isEqual(endDate)) {
+            DayOfWeek day = startDate.getDayOfWeek();
+            if(day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY) {
+                total = total.add(weekendRate) ;
+            }else {
+                total = total.add(standardRate);
+            }
+            startDate = startDate.plusDays(1);
         }
+        return total;
 
-        date = startDate;
-        while((date.getDayOfWeek() == DayOfWeek.FRIDAY || date.getDayOfWeek() == DayOfWeek.SATURDAY) && date != endDate){
-            weekend.add(date);
-        }
-        BigDecimal weekdayPrice = standardRate.multiply(BigDecimal.valueOf(weekday.size()));
-        BigDecimal weekendPrice = weekendRate.multiply(BigDecimal.valueOf(weekend.size()));
-
-        return weekdayPrice.add(weekendPrice);
     }
 
+    public Result<Reservation> update(Reservation reservation) throws DataException {
+        Result result = validate(reservation);
+        if(!result.isSuccess()) {
+            return result;
+        }
+        if(reservation.getHost().getHostId() == null) {
+            result.addErrorMessage("No host found");
+        }
+        if(result.isSuccess()) {
+            if(reservationRepository.update(reservation)) {
+                result.setPayload(reservation);
+            }else {
+                String message = String.format("No Reservation found", reservation.getHost().getHostId());
+                result.addErrorMessage(message);
+            }
+        }
+        return result;
+    }
 
     private Result<Reservation> validate(Reservation reservation) {
 
@@ -91,78 +101,71 @@ public class ReservationService {
             return result;
         }
 
+        validateFields(reservation, result);
+        if (!result.isSuccess()) {
+            return result;
+        }
 
+        validateChildrenExist(reservation, result);
         return result;
     }
 
     private Result<Reservation> validateNulls(Reservation reservation) {
         Result<Reservation> result = new Result<>();
 
-        if (reservation.getHostId() == null) {
-            result.addErrorMessage("Host is required");
+        if (reservation == null) {
+            result.addErrorMessage("Nothing to save.");
             return result;
         }
-       if(reservation.getGuest().getEmail() == null) {
-            result.addErrorMessage("Guest Required");
+        if (reservation.getHost() == null || reservation.getHost().getEmail() == null)  {
+            result.addErrorMessage("Host is required.");
+        }
+        if (reservation.getGuest() == null || reservation.getGuest().getEmail() == null) {
+            result.addErrorMessage("Guest is required.");
         }
         if (reservation.getStartDate() == null) {
             result.addErrorMessage("Start Date is required.");
         }
 
-        if (reservation.getEndDate() == null) {
-            result.addErrorMessage("End Date is required.");
-        }
-
-
         return result;
     }
 
-    private void validateFields(Reservation reservation, Result<Reservation> result) {
-        if (reservation.getStartDate().isBefore(LocalDate.now())) {
-            result.addErrorMessage("Start Date cannot be in the past.");
+    private void validateFields(Reservation newReservation, Result<Reservation> result) {
+
+        LocalDate startDate = newReservation.getStartDate();
+        LocalDate endDate = newReservation.getEndDate();
+        List<Reservation> reservations = reservationRepository.findByHost(newReservation.getHost().getHostId());
+        if (newReservation.getStartDate().isBefore(LocalDate.now()) || newReservation.getEndDate().isBefore(LocalDate.now())) {
+            result.addErrorMessage("Dates must be today or a future date.");
         }
-        if (reservation.getEndDate().isBefore(LocalDate.now())) {
-            result.addErrorMessage("End Date cannot be before Start Date.");
-        }
+        for (Reservation existingReservation : reservations) {
+            LocalDate existingStartDate = existingReservation.getStartDate();
+            LocalDate existingEndDate = existingReservation.getEndDate();
 
-        LocalDate startDate = reservation.getStartDate();
-        LocalDate endDate = reservation.getEndDate();
-
-        List<Reservation> reservations = reservationRepository.findByHost(reservation.getHostId());
-        for(Reservation res : reservations) {
-            LocalDate existingStartDate = res.getStartDate();
-            LocalDate existingEndDate = res.getEndDate();
-
-            if(startDate.isBefore(existingStartDate) && endDate.isAfter(startDate)) {
+            if (startDate.isBefore(existingStartDate) && endDate.isAfter(startDate)) {
                 result.addErrorMessage("The End Date overlaps the with another reservation. Please choose another End Date");
             }
-            if(startDate.isAfter(existingStartDate) && startDate.isBefore(existingEndDate)) {
+            if (startDate.isAfter(existingStartDate) && startDate.isBefore(existingEndDate)) {
                 result.addErrorMessage("The Start Date overlaps the with another reservation. Please choose another Start Date");
             }
-            if(startDate.isEqual(existingStartDate)) {
+            if (startDate.isEqual(existingStartDate)) {
                 result.addErrorMessage("There is another reservation with that Start Date. Please choose a different Start Date");
             }
-        }
 
+        }
     }
 
-    private void validateChildrenExist(Reservation reservation, Result<Reservation> result) throws DataException {
-        Guest guest = guestRepository.findByEmail(reservation.getGuestId());
-        if(guest == null) {
-            result.addErrorMessage("Guest does not exist");
+    private void validateChildrenExist(Reservation reservation, Result<Reservation> result) {
 
-        }
-        reservation.setGuest(guest);
-
-        Host host = hostRepository.findByEmail(reservation.getHostId());
-        if(host == null){
-            result.addErrorMessage("Host does not exist");
+        if (reservation.getHost().getHostId() ==  null || reservation.getHost().getEmail() == null){
+            result.addErrorMessage("Host does not exist.");
         }
 
-
-
-
+        if (reservation.getGuest().getGuestId() < 0 || reservation.getGuest().getEmail() == null) {
+            result.addErrorMessage("Guest does not exist.");
+        }
     }
+
 
 
 }

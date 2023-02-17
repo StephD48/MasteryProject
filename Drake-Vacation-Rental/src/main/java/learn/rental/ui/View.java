@@ -1,10 +1,14 @@
 package learn.rental.ui;
 
 
+import learn.rental.domain.Result;
+import learn.rental.models.Guest;
 import learn.rental.models.Host;
 import learn.rental.models.Reservation;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
@@ -55,19 +59,16 @@ public class View {
         }
         printHeader(MenuOption.VIEW_RESERVATIONS.getMessage());
         for(Reservation r : reservations) {
-            io.printf("Reservation Id: %s%n Guest Email: %s%n Host Email %s%n Start Date: %s%n End Date: %s%n Total: %s%n",
+            io.printf("ID: %s, %s - %s, Guest: %s, %s, Email: %s%n",
             r.getReservationId(),
-            r.getGuest().getEmail(),
-            r.getHost().getEmail(),
             r.getStartDate(),
-            r.getStartDate(),
-            r.getTotal());
+            r.getEndDate(),
+            r.getGuest().getFirstName(),
+            r.getGuest().getLastName(),
+            r.getGuest().getEmail());
 
         }
     }
-
-
-
 
     public String getEmail(boolean isHost) {
         String personType = isHost ? "Host" : "Guest";
@@ -78,8 +79,6 @@ public class View {
     public void enterToContinue() {
         io.readString("Press [Enter} to continue");
     }
-
-
 
 
     public Host chooseHost(List<Host> hosts) {
@@ -105,14 +104,23 @@ public class View {
     }
 
 
-    public Reservation addReservation() {
+    public Reservation add() {
         Reservation reservation = new Reservation();
-        reservation.setStartDate(io.readLocalDate("Enter a Start Date"));
-        reservation.setEndDate(io.readLocalDate("Enter a End Date"));
-        reservation.setGuestId(io.readRequiredString("Enter Guest Id"));
-        reservation.setTotal(io.readBigDecimal("Total for Stay"));
+        reservation.setStartDate(io.readLocalDate("Enter a Start Date: "));
+        reservation.setEndDate(io.readLocalDate("Enter a End Date: "));
+        reservation.setTotal(io.readBigDecimal("Total Value"));
         return reservation;
     }
+
+    public Reservation updateReservation(List<Reservation> reservations) {
+        Reservation reservation = new Reservation();
+        reservation.setStartDate(io.readLocalDate("Enter a Start Date: "));
+        reservation.setEndDate(io.readLocalDate("Enter a End Date: "));
+        reservation.setTotal(io.readBigDecimal("Total Value"));
+
+       return null;
+    }
+
 
     public void displayStatus(boolean success, List<String> messages) {
         printHeader(success ? "Success" : "Error");
@@ -125,4 +133,29 @@ public class View {
     }
 
 
+    public LocalDate getStartDate() {
+        return io.readLocalDate("Please enter a Start Date: ");
+    }
+
+    public LocalDate getEndDate() {
+        return io.readLocalDate("Please enter an End Date: ");
+    }
+
+    public String readRequiredString(String prompt) {
+        return io.readRequiredString(prompt);
+    }
+
+    public void displayReservation(Reservation reservation) {
+        io.printf("Reservation with: %s Guest %s%s  Start Date %s End Date %s Total %s ", reservation.getHost().getLastName(),
+                reservation.getGuest().getFirstName(),reservation.getGuest().getLastName(), reservation.getStartDate(),reservation.getEndDate(),
+                reservation.getTotal());
+    }
+
+    public boolean confirmReservation() {
+        return io.readBoolean("Would you like to complete the reservation? ");
+    }
+
+
+    public void printResult(Result result, String reservation_) {
+    }
 }

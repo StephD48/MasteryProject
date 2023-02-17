@@ -11,6 +11,8 @@ import learn.rental.models.Host;
 import learn.rental.models.Reservation;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -93,39 +95,58 @@ public class Controller {
 
     private void addReservation() throws DataException {
         view.printHeader(MenuOption.ADD_RESERVATION.getMessage());
-        Reservation reservation = view.addReservation();
-        Result<Reservation> result = reservationService.add(reservation);
-        if(!result.isSuccess()) {
-            view.displayStatus(false, result.getErrorMessages());
-        }else{
-            String message = String.format("Reservation %s created.", result.getPayload().getReservationId());
-            view.displayStatus(true, message);
+        Reservation reservation = new Reservation();
+
+        String guestEmail = view.readRequiredString("Please enter the guest email: ");
+        Guest guest = guestService.findByEmail(guestEmail);
+        if(guest == null) {
+            view.printMessage("No Guest Found");
+            String g = view.readRequiredString("Please enter the guest email: ");
         }
+        String hostEmail = view.readRequiredString("Please enter a host email: ");
+        Host host = hostService.findByEmail(hostEmail);
+        if(host == null) {
+            view.printMessage("No Host Found");
+            String h = view.readRequiredString("Please enter the guest email: ");
+        }
+        List<Reservation> reservations = reservationService.findByHost(reservation.getHost().getHostId());
+        view.displayReservationsByHost(reservations);
+        LocalDate start = view.getStartDate();
+        LocalDate end = view.getEndDate();
+        reservation.setHost(host);
+        reservation.setGuest(guest);
+        reservation.setStartDate(start);
+        reservation.setEndDate(end);
+        BigDecimal total = reservationService.calculateTotalCost(reservation);
+        reservation.setTotal(total);
+        view.displayReservation(reservation);
+        boolean isOk = view.confirmReservation();
 
-
+        Result<Reservation> result = new Result();
+        if(isOk) {
+            result = reservationService.add(reservation);
+            if (result.isSuccess()) {
+                String message = String.format("Reservation %s created.",
+                        result.getPayload().getReservationId());
+                view.displayStatus(true, message);
+            }
+           else {
+               view.displayStatus(false,result.getErrorMessages().get(0));
+            }
+        }else{
+            view.displayStatus(false,"Reservation cancelled");
+        }
 
     }
 
+
     private void editReservation() throws DataException {
         view.printHeader(MenuOption.EDIT_RESERVATION.getMessage());
-        /*List<Panel> panels = service.findAll();
-        Panel panel = view.selectPanel(panels);
-        if (panel != null) {
-            Panel updatedPanel = view.updatePanel(panel);
-            PanelResult result = service.updatePanel(updatedPanel);
-            view.printResult(result, "Panel Id %s updated.%n");
-        }*/
+
     }
 
     private void deleteReservation() throws DataException {
         view.printHeader(MenuOption.DELETE_RESERVATION.getMessage());
-        /*List<Panel> panels = service.findAll();
-        Panel panel =view.selectPanel(panels);
-        if(panel != null) {
-            PanelResult result = service.deleteById(panel.getPanelId());
-            result.setPayload(panel);
-            view.printResult(result,"Panel has been deleted");
-        }*/
 
     }
 
