@@ -14,5 +14,5 @@ public interface ReservationRepository {
 
     boolean update(Reservation reservation) throws DataException;
 
-
+    boolean delete(Reservation reservation) throws DataException;
 }

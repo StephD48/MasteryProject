@@ -11,6 +11,7 @@ import learn.rental.models.Host;
 import learn.rental.models.Reservation;
 import org.springframework.stereotype.Component;
 
+import java.awt.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -99,8 +100,16 @@ public class Controller {
 
         String guestEmail = view.readRequiredString("Please enter the guest email: ");
         Guest guest = guestService.findByEmail(guestEmail);
+        if(guest == null) {
+            view.printMessage("Guest not found");
+            return;
+        }
         String hostEmail = view.readRequiredString("Please enter a host email: ");
         Host host = hostService.findByEmail(hostEmail);
+        if(host == null) {
+            view.printMessage("Host not found");
+            return;
+        }
         List<Reservation> reservations = reservationService.findByHost(host.getHostId());
         view.displayReservationsByHost(reservations);
         LocalDate start = view.getStartDate();
@@ -111,7 +120,8 @@ public class Controller {
         reservation.setEndDate(end);
         BigDecimal total = reservationService.calculateTotalCost(reservation);
         reservation.setTotal(total);
-        view.displayReservation(reservation,guest);
+        view.displayReservation(reservation);
+
         boolean isOk = view.confirmReservation();
 
         Result<Reservation> result = new Result();
@@ -132,13 +142,60 @@ public class Controller {
 
     private void editReservation() throws DataException {
         view.printHeader(MenuOption.EDIT_RESERVATION.getMessage());
+        Reservation reservation = new Reservation();
+
+        String guestEmail = view.readRequiredString("Please enter the guest email: ");
+        Guest guest = guestService.findByEmail(guestEmail);
+        if (guest == null) {
+            view.printMessage("Guest not found");
+            return;
+        }
+        String hostEmail = view.readRequiredString("Please enter a host email: ");
+        Host host = hostService.findByEmail(hostEmail);
+        if (host == null) {
+            view.printMessage("Host not found");
+            return;
+        }
+        List<Reservation> reservations = reservationService.findByHost(host.getHostId());
+        //Reservation reserve = view.chooseReservation(reservations);
+
+
+        view.displayReservationsByHost(reservations);
+        Reservation reserve = view.chooseReservation(reservations);
+        view.updateReservation(reserve);
+
+        LocalDate newStart = view.getStartDate();
+        LocalDate newEnd = view.getEndDate();
+
+        reservation.setStartDate(newStart);
+        reservation.setEndDate(newEnd);
+        BigDecimal total = reservationService.calculateTotalCost(reservation);
+        reservation.setTotal(total);
+
+        //view.displayReservation(reservation);
+        Result<Reservation> result = reservationService.update(reservation);
+        boolean isOk = view.confirmReservation();
+
+        if (isOk) {
+            result = reservationService.update(reservation);
+            if (result.isSuccess()) {
+                String message = String.format("Reservation %s updated.",
+                        result.getPayload().getReservationId());
+                view.displayStatus(true, message);
+            } else {
+                view.displayStatus(false, result.getErrorMessages().get(0));
+            }
+        } else {
+            view.displayStatus(false, "Reservation update cancelled");
+        }
     }
-
-
-
 
     private void deleteReservation() throws DataException {
         view.printHeader(MenuOption.DELETE_RESERVATION.getMessage());
+
+
+
+
 
     }
 

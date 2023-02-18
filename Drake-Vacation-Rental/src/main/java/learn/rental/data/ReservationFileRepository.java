@@ -63,9 +63,29 @@ public class ReservationFileRepository implements ReservationRepository {
     }
     @Override
     public boolean  update(Reservation reservation) throws DataException {
+        List<Reservation> all = findByHost(reservation.getHost().getHostId());
+        for (int i = 0; i < all.size(); i++) {
+            if (all.get(i).getHost().getHostId().equals(reservation.getHost().getHostId())) {
+                all.set(i, reservation);
+                writeAll(all, reservation.getHost().getHostId());
+                return true;
+            }
+        }
+        return false;
 
+    }
+    public boolean delete(Reservation reservation) throws DataException {
+        List<Reservation> all = findByHost(reservation.getHost().getHostId());
+        for(int i = 0; i < all.size(); i++) {
+            if(all.get(i).getHost().getHostId().equals(reservation.getHost().getHostId())) {
+                all.set(i, reservation);
+                writeAll(all, reservation.getHost().getHostId());
+                return true;
+            }
+        }
         return false;
     }
+
 
 
     private void writeAll(List<Reservation> reservations, String hostId) throws DataException {
@@ -93,12 +113,11 @@ public class ReservationFileRepository implements ReservationRepository {
     }
 
     private String serialize(Reservation reservation) {
-        return String.format("%s,%s,%s,%s,%s,%s",
+        return String.format("%s,%s,%s,%s,%s",
                 reservation.getReservationId(),
-                reservation.getHost().getHostId(),
-                reservation.getGuest().getGuestId(),
                 reservation.getStartDate(),
                 reservation.getEndDate(),
+                reservation.getGuest().getGuestId(),
                 reservation.getTotal());
 
     }

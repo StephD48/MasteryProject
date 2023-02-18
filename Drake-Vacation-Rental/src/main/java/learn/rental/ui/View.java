@@ -7,6 +7,7 @@ import learn.rental.models.Host;
 import learn.rental.models.Reservation;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -20,6 +21,7 @@ public class View {
     private final ConsoleIO io;
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
     public View(ConsoleIO io) {
         this.io = io;
     }
@@ -41,30 +43,32 @@ public class View {
 
 
     }
+
     public void printHeader(String message) {
         System.out.println();
         System.out.println(message);
         System.out.println("=".repeat(message.length()));
 
     }
+
     public void printMessage(String message) {
         System.out.println(message);
     }
 
 
     public void displayReservationsByHost(List<Reservation> reservations) {
-        if(reservations == null || reservations.isEmpty()){
+        if (reservations == null || reservations.isEmpty()) {
             io.println("No Reservations Found");
         }
         printHeader(MenuOption.VIEW_RESERVATIONS.getMessage());
-        for(Reservation r : reservations) {
+        for (Reservation r : reservations) {
             io.printf("ID: %s, %s - %s, Guest: %s, %s, Email: %s%n",
-            r.getReservationId(),
-            r.getStartDate(),
-            r.getEndDate(),
-            r.getGuest().getFirstName(),
-            r.getGuest().getLastName(),
-            r.getGuest().getEmail());
+                    r.getReservationId(),
+                    r.getStartDate(),
+                    r.getEndDate(),
+                    r.getGuest().getFirstName(),
+                    r.getGuest().getLastName(),
+                    r.getGuest().getEmail());
 
         }
     }
@@ -79,30 +83,6 @@ public class View {
         io.readString("Press [Enter} to continue");
     }
 
-
-    public Host chooseHost(List<Host> hosts) {
-        io.println("");
-        
-        if (hosts.isEmpty()) {
-            io.println("No Hosts Found");
-            return null;
-        }
-        
-        Host host = hosts.get(0);
-        
-        io.printf("[1] - %s %s%n",host.getLastName(),host.getEmail());
-        io.println("[2] Exit");
-        String message = "Select the host or exit [1-2]";
-        
-        int index = io.readInt(message, 1,2);
-        if(index == 2) {
-            return null;
-        }
-        return host;
-        
-    }
-
-
     public Reservation add() {
         Reservation reservation = new Reservation();
         reservation.setStartDate(io.readLocalDate("Enter a Start Date: "));
@@ -113,9 +93,23 @@ public class View {
 
     public Reservation updateReservation(Reservation reservation) {
 
-       return reservation;
+        reservation.setStartDate(io.readLocalDate("Enter a Start Date: "));
+        reservation.setEndDate(io.readLocalDate("Enter a End Date: "));
+        reservation.setTotal(io.readBigDecimal("Total Value"));
+        return reservation;
     }
 
+    public Reservation chooseReservation(List<Reservation> reservations) {
+        displayReservationsByHost(reservations);
+        int reservationId = io.readInt("Enter the Id of the Reservation you would like to update: ");
+        for(Reservation reservation : reservations) {
+            if(reservation.getReservationId() == reservationId) {
+                return reservation;
+            }
+        }
+        io.printf("No reservation found with that Id " + reservationId);
+        return null;
+    }
 
     public void displayStatus(boolean success, List<String> messages) {
         printHeader(success ? "Success" : "Error");
@@ -123,6 +117,7 @@ public class View {
             io.println(message);
         }
     }
+
     public void displayStatus(boolean success, String message) {
         displayStatus(success, List.of(message));
     }
@@ -140,10 +135,10 @@ public class View {
         return io.readRequiredString(prompt);
     }
 
-    public void displayReservation(Reservation reservation, Guest guest) {
+    public void displayReservation(Reservation reservation) {
 
         io.printf("Reservation with: %s Guest %s%s  Start Date %s End Date %s Total %s ", reservation.getHost().getLastName(),
-                guest.getFirstName(),guest.getLastName(), reservation.getStartDate(),reservation.getEndDate(),
+                reservation.getGuest().getFirstName(), reservation.getGuest().getLastName(), reservation.getStartDate(), reservation.getEndDate(),
                 reservation.getTotal());
     }
 
@@ -151,7 +146,29 @@ public class View {
         return io.readBoolean("Would you like to complete the reservation? ");
     }
 
+    /*public Host chooseHost(List<Host> hosts) {
+        io.println("");
 
-    public void printResult(Result result, String reservation_) {
-    }
+        if (hosts.isEmpty()) {
+            io.println("No Hosts Found");
+            return null;
+        }
+
+        Host host = hosts.get(0);
+
+        io.printf("[1] - %s %s%n",host.getLastName(),host.getEmail());
+        io.println("[2] Exit");
+        String message = "Select the host or exit [1-2]";
+
+        int index = io.readInt(message, 1,2);
+        if(index == 2) {
+            return null;
+        }
+        return host;
+
+    }*/
+
+
+
+
 }

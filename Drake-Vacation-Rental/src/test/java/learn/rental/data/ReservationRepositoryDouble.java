@@ -13,7 +13,7 @@ public class ReservationRepositoryDouble implements ReservationRepository{
     @Override
     public List<Reservation> findByHost(String hostId) {
         return reservations.stream()
-                .filter(r ->r.getHostId().equals(hostId))
+                //.filter(r ->r.getHostId().equals(hostId))
                 .collect(Collectors.toList());
     }
 
@@ -28,8 +28,10 @@ public class ReservationRepositoryDouble implements ReservationRepository{
         return false;
     }
 
-    /*@Override
-    public Reservation deleteById(int reservationId) {
-        return null;
-    }*/
+    @Override
+    public boolean delete(Reservation reservation) throws DataException {
+        return false;
+    }
+
+
 }

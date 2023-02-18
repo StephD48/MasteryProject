@@ -76,11 +76,33 @@ public class ReservationService {
     }
 
     public Result<Reservation> update(Reservation reservation) throws DataException {
+        Result result = validate(reservation);
+        if(!result.isSuccess()) {
+            return result;
+        }
+        if(reservation.getHost().getHostId() == null) {
+            result.addErrorMessage("No host found");
+        }
+        if(result.isSuccess()) {
+            if(reservationRepository.update(reservation)) {
+                result.setPayload(reservation);
+            }else {
+                String message = String.format("No Reservation found", reservation.getHost().getHostId());
+                result.addErrorMessage(message);
+            }
+        }
+        return result;
 
-        return null;
+    }
+    public Result delete(Reservation reservations) throws DataException {
+        Result result = new Result();
+        if(!reservationRepository.delete(reservations)){
+
+        }
+        return result;
     }
 
-    private Result<Reservation> validate(Reservation reservation) {
+    private Result<Reservation> validate(Reservation reservation) throws DataException {
 
         Result<Reservation> result = validateNulls(reservation);
         if (!result.isSuccess()) {
@@ -141,17 +163,19 @@ public class ReservationService {
         }
     }
 
-    private void validateChildrenExist(Reservation reservation, Result<Reservation> result) {
+    private void validateChildrenExist(Reservation reservation, Result<Reservation> result) throws DataException {
 
-        if (reservation.getHost().getHostId() ==  null || reservation.getHost().getEmail() == null){
+        if (reservation.getHost().getHostId() ==  null || reservation.getHost().getEmail() == null) {
             result.addErrorMessage("Host does not exist.");
         }
 
-        if (reservation.getGuest().getGuestId() < 0 || reservation.getGuest().getEmail() == null) {
+        if (reservation.getGuest().getEmail() == null || guestRepository.findByEmail(reservation.getGuest().getEmail())== null) {
             result.addErrorMessage("Guest does not exist.");
         }
+
     }
 
-
-
 }
+
+
+

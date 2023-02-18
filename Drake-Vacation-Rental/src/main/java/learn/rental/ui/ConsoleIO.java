@@ -22,8 +22,8 @@ public class ConsoleIO {
     private static final String INVALID_DATE
             = "[INVALID] Enter a date in MM/dd/yyyy format.";
 
-    private static final String INVALID_EMAIL
-            = "[INVALID] Email does not exist";
+    //private static final String INVALID_EMAIL
+            //= "[INVALID] Email does not exist";
 
     private final Scanner scanner = new Scanner(System.in);
 
@@ -139,4 +139,6 @@ public class ConsoleIO {
             println(String.format(NUMBER_OUT_OF_RANGE, min, max));
         }
     }
+
+
 }
