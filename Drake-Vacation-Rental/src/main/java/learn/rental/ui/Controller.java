@@ -99,17 +99,9 @@ public class Controller {
 
         String guestEmail = view.readRequiredString("Please enter the guest email: ");
         Guest guest = guestService.findByEmail(guestEmail);
-        if(guest == null) {
-            view.printMessage("No Guest Found");
-            String g = view.readRequiredString("Please enter the guest email: ");
-        }
         String hostEmail = view.readRequiredString("Please enter a host email: ");
         Host host = hostService.findByEmail(hostEmail);
-        if(host == null) {
-            view.printMessage("No Host Found");
-            String h = view.readRequiredString("Please enter the guest email: ");
-        }
-        List<Reservation> reservations = reservationService.findByHost(reservation.getHost().getHostId());
+        List<Reservation> reservations = reservationService.findByHost(host.getHostId());
         view.displayReservationsByHost(reservations);
         LocalDate start = view.getStartDate();
         LocalDate end = view.getEndDate();
@@ -119,7 +111,7 @@ public class Controller {
         reservation.setEndDate(end);
         BigDecimal total = reservationService.calculateTotalCost(reservation);
         reservation.setTotal(total);
-        view.displayReservation(reservation);
+        view.displayReservation(reservation,guest);
         boolean isOk = view.confirmReservation();
 
         Result<Reservation> result = new Result();
@@ -136,14 +128,14 @@ public class Controller {
         }else{
             view.displayStatus(false,"Reservation cancelled");
         }
-
     }
-
 
     private void editReservation() throws DataException {
         view.printHeader(MenuOption.EDIT_RESERVATION.getMessage());
-
     }
+
+
+
 
     private void deleteReservation() throws DataException {
         view.printHeader(MenuOption.DELETE_RESERVATION.getMessage());

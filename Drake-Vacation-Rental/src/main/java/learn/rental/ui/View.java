@@ -7,7 +7,6 @@ import learn.rental.models.Host;
 import learn.rental.models.Reservation;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -112,13 +111,9 @@ public class View {
         return reservation;
     }
 
-    public Reservation updateReservation(List<Reservation> reservations) {
-        Reservation reservation = new Reservation();
-        reservation.setStartDate(io.readLocalDate("Enter a Start Date: "));
-        reservation.setEndDate(io.readLocalDate("Enter a End Date: "));
-        reservation.setTotal(io.readBigDecimal("Total Value"));
+    public Reservation updateReservation(Reservation reservation) {
 
-       return null;
+       return reservation;
     }
 
 
@@ -145,9 +140,10 @@ public class View {
         return io.readRequiredString(prompt);
     }
 
-    public void displayReservation(Reservation reservation) {
+    public void displayReservation(Reservation reservation, Guest guest) {
+
         io.printf("Reservation with: %s Guest %s%s  Start Date %s End Date %s Total %s ", reservation.getHost().getLastName(),
-                reservation.getGuest().getFirstName(),reservation.getGuest().getLastName(), reservation.getStartDate(),reservation.getEndDate(),
+                guest.getFirstName(),guest.getLastName(), reservation.getStartDate(),reservation.getEndDate(),
                 reservation.getTotal());
     }
 

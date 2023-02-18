@@ -76,22 +76,8 @@ public class ReservationService {
     }
 
     public Result<Reservation> update(Reservation reservation) throws DataException {
-        Result result = validate(reservation);
-        if(!result.isSuccess()) {
-            return result;
-        }
-        if(reservation.getHost().getHostId() == null) {
-            result.addErrorMessage("No host found");
-        }
-        if(result.isSuccess()) {
-            if(reservationRepository.update(reservation)) {
-                result.setPayload(reservation);
-            }else {
-                String message = String.format("No Reservation found", reservation.getHost().getHostId());
-                result.addErrorMessage(message);
-            }
-        }
-        return result;
+
+        return null;
     }
 
     private Result<Reservation> validate(Reservation reservation) {
