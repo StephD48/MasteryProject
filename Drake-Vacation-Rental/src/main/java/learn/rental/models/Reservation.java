@@ -16,20 +16,21 @@ public class Reservation {
     private Guest guest;
 
 
-   /* public Reservation(int reservationId, LocalDate startDate, LocalDate endDate, BigDecimal total, String hostId, Host host, String guestId, Guest guest) {
+
+    public Reservation(int reservationId, LocalDate startDate, LocalDate endDate, BigDecimal total, Host host, Guest guest) {
         this.reservationId = reservationId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.total = total;
-        this.hostId = hostId;
         this.host = host;
-        this.guestId = guestId;
         this.guest = guest;
-    }*/
+    }
 
-    /*public Reservation() {
+    public Reservation() {
 
-    }*/
+    }
+
+
 
     public int getReservationId() {
         return reservationId;

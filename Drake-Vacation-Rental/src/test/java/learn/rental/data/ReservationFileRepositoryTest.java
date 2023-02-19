@@ -54,12 +54,7 @@ class ReservationFileRepositoryTest {
 
     @Test
     void shouldAddReservation() {
-        Reservation reservation = new Reservation();
-        reservation.setReservationId(1234);
-        reservation.setStartDate(LocalDate.of(2023,5,1));
-        reservation.setEndDate(LocalDate.of(2023,5,15));
-        //reservation.setGuestId("123");
-        reservation.setTotal(BigDecimal.valueOf(1000));
+
 
 
     }
@@ -70,22 +65,18 @@ class ReservationFileRepositoryTest {
     }
 
     @Test
-    void shouldNotUpdateReservation() {
-        Reservation reservation = new Reservation();
-        reservation.setReservationId(999999);
+    void shouldNotUpdateReservation() throws DataException {
 
-        //boolean result = repository.update(reservation);
-        //assertFalse(result);
     }
 
     @Test
-    void shouldDeleteById() {
+    void shouldDelete() {
 
     }
-    @Test
+   /* @Test
     void shouldNotDeleteUnknown(){
-        //assertFalse(repository.deleteById(9999999));
-    }
+        assertFalse(repository.delete.reservationId(9999999));
+    }*/
 
 
 

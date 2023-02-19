@@ -14,40 +14,116 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ReservationServiceTest {
 
-    private ReservationFileRepository repository = new ReservationFileRepository("./data/data/reservations");
 
-    ReservationService service = new ReservationService(
+
+    private ReservationService service = new ReservationService(
             new ReservationRepositoryDouble(),
             new GuestRepositoryDouble(),
             new HostRepositoryDouble());
 
 
     @Test
-    void shouldFindByHost() throws DataException {
-        String hostId = "3edda6bc-ab95-49a8-8962-d50b53f84b15";
-        List<Reservation> actual = service.findByHost(hostId);
-        assertNotNull(actual);
-
-
-
+    void shouldFindByHostId() throws DataException {
+        List<Reservation> result = service.findByHost(HostRepositoryDouble.HOST.getHostId());
+        assertNotNull(result);
+        assertEquals(3, result.size());
     }
-
 
     @Test
-    void shouldAddReservation() throws DataException {
-        Reservation reservation = new Reservation();
-        reservation.setReservationId(1234);
-        reservation.setStartDate(LocalDate.of(2023,5,1));
-        reservation.setEndDate(LocalDate.of(2023,5,15));
-        reservation.setGuestId("123");
-        reservation.setTotal(BigDecimal.valueOf(1000));
+    void shouldAdd() {
+    }
 
-        Result<Reservation> result = service.add(reservation);
-        assertTrue(result.isSuccess());
-        assertNotNull(result.getPayload());
+    @Test
+    void shouldNotAddNull() throws DataException {
+        Result<Reservation> result = service.add(null);
+        assertNotNull(result);
+        assertFalse(result.isSuccess());
+    }
+
+    @Test
+    void shouldNotAddNullHost() {
+    }
+
+    // stretch goal?
+    @Test
+    void shouldNotAddUnknownHost() {
+    }
+
+    @Test
+    void shouldNotAddNullGuest() {
+    }
+
+    // stretch goal?
+    @Test
+    void shouldNotAddUnknownGuest() {
+    }
+
+    @Test
+    void shouldNotAddNullStartDate() {
+    }
+
+    @Test
+    void shouldNotAddNullEndDate() {
+    }
+
+    @Test
+    void shouldNotAddStartDateThatComesAfterEndDate() {
+    }
+
+    @Test
+    void shouldNotAddOverlappingDateRangeStartDate() {
+    }
+
+    @Test
+    void shouldNotAddOverlappingDateRangeEndDate() {
+        // TODO implement this test
+    }
+
+    @Test
+    void shouldNotAddOverlappingDateRangeInside() {
+        // TODO implement this test
+    }
+
+    @Test
+    void shouldNotAddOverlappingDateRangeOutside() {
+        // TODO implement this test
+    }
+
+    @Test
+    void shouldNotAddOverlappingDateRangeSameDates() {
+        // TODO implement this test
+    }
+
+    @Test
+    void shouldNotAddPastStartDate() {
+        // TODO implement this
+    }
+
+    @Test
+    void shouldUpdate() {
 
 
 
     }
+
+    @Test
+    void shouldNotUpdate() {
+        // TODO implement this
+    }
+
+    @Test
+    void shouldDelete() {
+        // TODO implement this
+    }
+
+    @Test
+    void shouldNotDelete() {
+
+    }
+
+
+
+
+
 
 }

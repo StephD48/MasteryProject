@@ -85,30 +85,40 @@ public class View {
 
     public Reservation add() {
         Reservation reservation = new Reservation();
-        reservation.setStartDate(io.readLocalDate("Enter a Start Date: "));
-        reservation.setEndDate(io.readLocalDate("Enter a End Date: "));
-        reservation.setTotal(io.readBigDecimal("Total Value"));
+        reservation.setStartDate(io.readLocalDate("Enter a Start Date(MM/dd/yyyy): "));
+        reservation.setEndDate(io.readLocalDate("Enter a End Date (MM/dd/yyyy): "));
+        reservation.setTotal(io.readBigDecimal("Total Value:"));
         return reservation;
     }
 
     public Reservation updateReservation(Reservation reservation) {
 
-        reservation.setStartDate(io.readLocalDate("Enter a Start Date: "));
-        reservation.setEndDate(io.readLocalDate("Enter a End Date: "));
-        reservation.setTotal(io.readBigDecimal("Total Value"));
-        return reservation;
+        reservation.setStartDate(io.readLocalDate("Enter a Start Date (MM/dd/yyyy): "));
+        reservation.setEndDate(io.readLocalDate("Enter a End Date (MM/dd/yyyy): "));
+        reservation.setTotal(io.readBigDecimal("Total Value:"));
+        return updateReservation(new Reservation());
     }
 
     public Reservation chooseReservation(List<Reservation> reservations) {
         displayReservationsByHost(reservations);
-        int reservationId = io.readInt("Enter the Id of the Reservation you would like to update: ");
+
+        int reservationId = io.readInt("Reservation ID: ");
+        if(reservationId < 0){
+            io.readString("That ID does not exist. Please enter a different ID ");
+            return null;
+        }
         for(Reservation reservation : reservations) {
             if(reservation.getReservationId() == reservationId) {
                 return reservation;
             }
         }
-        io.printf("No reservation found with that Id " + reservationId);
+        io.printf("No reservation found with that ID " + reservationId);
         return null;
+    }
+
+    public boolean deleteReservation() {
+       return true;
+
     }
 
     public void displayStatus(boolean success, List<String> messages) {
@@ -124,11 +134,11 @@ public class View {
 
 
     public LocalDate getStartDate() {
-        return io.readLocalDate("Please enter a Start Date: ");
+        return io.readLocalDate("Please enter a Start Date (MM/dd/yyyy): ");
     }
 
     public LocalDate getEndDate() {
-        return io.readLocalDate("Please enter an End Date: ");
+        return io.readLocalDate("Please enter an End Date (MM/dd/yyyy): ");
     }
 
     public String readRequiredString(String prompt) {
@@ -136,14 +146,20 @@ public class View {
     }
 
     public void displayReservation(Reservation reservation) {
-
-        io.printf("Reservation with: %s Guest %s%s  Start Date %s End Date %s Total %s ", reservation.getHost().getLastName(),
-                reservation.getGuest().getFirstName(), reservation.getGuest().getLastName(), reservation.getStartDate(), reservation.getEndDate(),
+        printHeader("Summary");
+        io.printf("Reservation with: %s%n Guest: %s%s%n Start Date: %s%n End Date: %s%n Total: $%s%n ",
+                reservation.getHost().getLastName(),
+                reservation.getGuest().getFirstName(), reservation.getGuest().getLastName(), reservation.getStartDate(),
+                reservation.getEndDate(),
                 reservation.getTotal());
     }
 
     public boolean confirmReservation() {
         return io.readBoolean("Would you like to complete the reservation? ");
+    }
+
+    public boolean confirmDelete() {
+        return io.readBoolean("Would you like to Delete this reservation? ");
     }
 
     /*public Host chooseHost(List<Host> hosts) {

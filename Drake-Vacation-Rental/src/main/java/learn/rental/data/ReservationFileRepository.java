@@ -65,9 +65,9 @@ public class ReservationFileRepository implements ReservationRepository {
     public boolean  update(Reservation reservation) throws DataException {
         List<Reservation> all = findByHost(reservation.getHost().getHostId());
         for (int i = 0; i < all.size(); i++) {
-            if (all.get(i).getHost().getHostId().equals(reservation.getHost().getHostId())) {
+            if (all.get(i).getReservationId() == reservation.getReservationId()) {
                 all.set(i, reservation);
-                writeAll(all, reservation.getHost().getHostId());
+                writeAll(all,reservation.getHost().getHostId());
                 return true;
             }
         }
@@ -77,13 +77,14 @@ public class ReservationFileRepository implements ReservationRepository {
     public boolean delete(Reservation reservation) throws DataException {
         List<Reservation> all = findByHost(reservation.getHost().getHostId());
         for(int i = 0; i < all.size(); i++) {
-            if(all.get(i).getHost().getHostId().equals(reservation.getHost().getHostId())) {
-                all.set(i, reservation);
-                writeAll(all, reservation.getHost().getHostId());
+            if(all.get(i).getReservationId() == reservation.getReservationId()) {
+                all.remove(i);
+                writeAll(all,reservation.getHost().getHostId());
                 return true;
             }
         }
         return false;
+
     }
 
 

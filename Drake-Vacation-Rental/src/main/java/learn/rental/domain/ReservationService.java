@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,7 +43,7 @@ public class ReservationService {
     }
 
     public Result<Reservation> add(Reservation reservation) throws DataException {
-       Result<Reservation> result = validate(reservation);
+        Result<Reservation> result = validate(reservation);
         if (!result.isSuccess()) {
             return result;
         }
@@ -53,7 +52,7 @@ public class ReservationService {
         return result;
     }
 
-    public BigDecimal calculateTotalCost( Reservation reservation) throws DataException {
+    public BigDecimal calculateTotalCost(Reservation reservation) throws DataException {
         Host host = hostRepository.findByEmail(reservation.getHost().getEmail());
         BigDecimal standardRate = host.getStandardRate();
         BigDecimal weekendRate = host.getWeekendRate();
@@ -62,11 +61,11 @@ public class ReservationService {
         LocalDate endDate = reservation.getEndDate();
 
         BigDecimal total = BigDecimal.ZERO;
-        while(startDate.isBefore(endDate) || startDate.isEqual(endDate)) {
+        while (startDate.isBefore(endDate) || startDate.isEqual(endDate)) {
             DayOfWeek day = startDate.getDayOfWeek();
-            if(day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY) {
-                total = total.add(weekendRate) ;
-            }else {
+            if (day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY) {
+                total = total.add(weekendRate);
+            } else {
                 total = total.add(standardRate);
             }
             startDate = startDate.plusDays(1);
@@ -76,30 +75,23 @@ public class ReservationService {
     }
 
     public Result<Reservation> update(Reservation reservation) throws DataException {
-        Result result = validate(reservation);
-        if(!result.isSuccess()) {
+        Result<Reservation> result = validate(reservation);
+        if (!result.isSuccess()) {
             return result;
         }
-        if(reservation.getHost().getHostId() == null) {
+        if (reservation.getHost().getHostId() == null) {
             result.addErrorMessage("No host found");
         }
-        if(result.isSuccess()) {
-            if(reservationRepository.update(reservation)) {
+        if (result.isSuccess()) {
+            if (reservationRepository.update(reservation)) {
                 result.setPayload(reservation);
-            }else {
+            } else {
                 String message = String.format("No Reservation found", reservation.getHost().getHostId());
                 result.addErrorMessage(message);
             }
         }
         return result;
 
-    }
-    public Result delete(Reservation reservations) throws DataException {
-        Result result = new Result();
-        if(!reservationRepository.delete(reservations)){
-
-        }
-        return result;
     }
 
     private Result<Reservation> validate(Reservation reservation) throws DataException {
@@ -125,14 +117,14 @@ public class ReservationService {
             result.addErrorMessage("Nothing to save.");
             return result;
         }
-        if (reservation.getHost() == null || reservation.getHost().getEmail() == null)  {
+        if (reservation.getHost() == null || reservation.getHost().getEmail() == null) {
             result.addErrorMessage("Host is required.");
         }
         if (reservation.getGuest() == null || reservation.getGuest().getEmail() == null) {
             result.addErrorMessage("Guest is required.");
         }
         if (reservation.getStartDate() == null) {
-            result.addErrorMessage("Start Date is required.");
+            result.addErrorMessage("Dates are required.");
         }
 
         return result;
@@ -162,19 +154,27 @@ public class ReservationService {
 
         }
     }
-
     private void validateChildrenExist(Reservation reservation, Result<Reservation> result) throws DataException {
 
-        if (reservation.getHost().getHostId() ==  null || reservation.getHost().getEmail() == null) {
+        if (reservation.getHost().getHostId() == null || reservation.getHost().getEmail() == null) {
             result.addErrorMessage("Host does not exist.");
         }
 
-        if (reservation.getGuest().getEmail() == null || guestRepository.findByEmail(reservation.getGuest().getEmail())== null) {
+        if (reservation.getGuest().getEmail() == null || guestRepository.findByEmail(reservation.getGuest()
+                .getEmail()) == null) {
             result.addErrorMessage("Guest does not exist.");
         }
 
     }
 
+    public Result delete(Reservation reservation) throws DataException {
+        Result result = new Result();
+        if (!reservationRepository.delete(reservation)) {
+            String message = String.format("No panel to delete matching the id %d", reservation);
+            result.addErrorMessage(message);
+        }
+        return result;
+    }
 }
 
 
