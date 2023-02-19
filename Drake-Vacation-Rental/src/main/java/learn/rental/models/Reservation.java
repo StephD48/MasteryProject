@@ -81,6 +81,16 @@ public class Reservation {
         this.guest = guest;
     }
 
+    public void add(Reservation reservation) {
+    }
+
+    public Reservation get(int i) {
+        return null;
+    }
+
+    public void set(int i, Reservation reservation) {
+    }
+
 
 
 /* public BigDecimal getTotal() {

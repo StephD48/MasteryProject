@@ -1,6 +1,8 @@
 package learn.rental.data;
 
 
+import learn.rental.models.Guest;
+import learn.rental.models.Host;
 import learn.rental.models.Reservation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,30 +55,67 @@ class ReservationFileRepositoryTest {
 
 
     @Test
-    void shouldAddReservation() {
+    void shouldAddReservation() throws DataException {
+        Host host = new Host();
+        host.setHostId("1");
+        Guest guest = new Guest();
+        guest.setGuestId(1);
+        Reservation reservation = new Reservation();
+        reservation.setStartDate(LocalDate.now());
+        reservation.setEndDate(LocalDate.now().plusDays(1));
+        reservation.setGuest(guest);
+        reservation.setHost(host);
+        reservation.setTotal(new BigDecimal("100"));
 
+        Reservation result = repository.add(reservation);
+
+        assertNotNull(result);
+        assertEquals(1, result.getReservationId());
 
 
     }
 
     @Test
-    void shouldUpdate() {
+    void shouldUpdate() throws DataException {
+        Reservation reservation = repository.findByHost("1").get(0);
+        reservation.setTotal(new BigDecimal("500"));
 
+        boolean success = repository.update(reservation);
+
+        assertTrue(success);
+        Reservation updated = repository.findByHost("1").get(0);
+        assertEquals(new BigDecimal("500"), updated.getTotal());
     }
 
     @Test
     void shouldNotUpdateReservation() throws DataException {
 
+        Reservation reservation = new Reservation();
+        reservation.setReservationId(99999);
+
+        boolean success = repository.update(reservation);
+
+        assertFalse(success);
     }
 
     @Test
-    void shouldDelete() {
+    void shouldDelete() throws DataException {
+        Reservation reservation = repository.findByHost("1").get(0);
+        boolean success = repository.delete(reservation);
+
+        assertTrue(success);
+        assertFalse(repository.findByHost("1").contains(reservation));
 
     }
-   /* @Test
-    void shouldNotDeleteUnknown(){
-        assertFalse(repository.delete.reservationId(9999999));
-    }*/
+    @Test
+    void shouldNotDeleteMissingReservation() throws DataException {
+        Reservation reservation = new Reservation();
+        reservation.setReservationId(99999);
+
+        boolean success = repository.delete(reservation);
+
+        assertFalse(success);
+    }
 
 
 

@@ -1,9 +1,7 @@
 package learn.rental.ui;
 
 
-import learn.rental.domain.Result;
-import learn.rental.models.Guest;
-import learn.rental.models.Host;
+
 import learn.rental.models.Reservation;
 import org.springframework.stereotype.Component;
 
@@ -116,10 +114,6 @@ public class View {
         return null;
     }
 
-    public boolean deleteReservation() {
-       return true;
-
-    }
 
     public void displayStatus(boolean success, List<String> messages) {
         printHeader(success ? "Success" : "Error");

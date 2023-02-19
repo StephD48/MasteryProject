@@ -131,29 +131,38 @@ public class ReservationService {
     }
 
     private void validateFields(Reservation newReservation, Result<Reservation> result) {
-
         LocalDate startDate = newReservation.getStartDate();
         LocalDate endDate = newReservation.getEndDate();
         List<Reservation> reservations = reservationRepository.findByHost(newReservation.getHost().getHostId());
-        if (newReservation.getStartDate().isBefore(LocalDate.now()) || newReservation.getEndDate().isBefore(LocalDate.now())) {
+
+
+        if (startDate.isBefore(LocalDate.now()) || endDate.isBefore(LocalDate.now())) {
             result.addErrorMessage("Dates must be today or a future date.");
         }
+
+
+        if (startDate.isAfter(endDate)) {
+            result.addErrorMessage("Start date must be before end date.");
+        }
+
+
         for (Reservation existingReservation : reservations) {
             LocalDate existingStartDate = existingReservation.getStartDate();
             LocalDate existingEndDate = existingReservation.getEndDate();
 
-            if (startDate.isBefore(existingStartDate) && endDate.isAfter(startDate)) {
-                result.addErrorMessage("The End Date overlaps the with another reservation. Please choose another End Date");
-            }
-            if (startDate.isAfter(existingStartDate) && startDate.isBefore(existingEndDate)) {
-                result.addErrorMessage("The Start Date overlaps the with another reservation. Please choose another Start Date");
-            }
-            if (startDate.isEqual(existingStartDate)) {
-                result.addErrorMessage("There is another reservation with that Start Date. Please choose a different Start Date");
+            if (newReservation.getReservationId() != 0 && newReservation.getReservationId()
+                    == (existingReservation.getReservationId())) {
+                continue;
             }
 
+            if (startDate.isEqual(existingStartDate) || endDate.isEqual(existingEndDate) ||
+                    (startDate.isAfter(existingStartDate) && startDate.isBefore(existingEndDate)) ||
+                    (endDate.isAfter(existingStartDate) && endDate.isBefore(existingEndDate))) {
+                result.addErrorMessage("Reservation dates overlap with another reservation. Please choose different dates.");
+            }
         }
     }
+
     private void validateChildrenExist(Reservation reservation, Result<Reservation> result) throws DataException {
 
         if (reservation.getHost().getHostId() == null || reservation.getHost().getEmail() == null) {

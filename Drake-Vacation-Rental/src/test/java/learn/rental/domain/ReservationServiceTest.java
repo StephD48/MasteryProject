@@ -1,6 +1,7 @@
 package learn.rental.domain;
 
 import learn.rental.data.*;
+import learn.rental.models.Guest;
 import learn.rental.models.Host;
 import learn.rental.models.Reservation;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,8 @@ class ReservationServiceTest {
             new HostRepositoryDouble());
 
 
+
+
     @Test
     void shouldFindByHostId() throws DataException {
         List<Reservation> result = service.findByHost(HostRepositoryDouble.HOST.getHostId());
@@ -30,7 +33,9 @@ class ReservationServiceTest {
     }
 
     @Test
-    void shouldAdd() {
+    void shouldAddReservation() throws DataException{
+
+
     }
 
     @Test
@@ -42,37 +47,43 @@ class ReservationServiceTest {
 
     @Test
     void shouldNotAddNullHost() {
+        // TODO implement this test
     }
 
     // stretch goal?
     @Test
     void shouldNotAddUnknownHost() {
+        // TODO implement this test
     }
 
     @Test
     void shouldNotAddNullGuest() {
+        // TODO implement this test
     }
 
     // stretch goal?
     @Test
     void shouldNotAddUnknownGuest() {
+        // TODO implement this test
     }
 
     @Test
     void shouldNotAddNullStartDate() {
+        // TODO implement this test
     }
 
     @Test
     void shouldNotAddNullEndDate() {
+        // TODO implement this test
     }
 
     @Test
     void shouldNotAddStartDateThatComesAfterEndDate() {
-    }
+    }      // TODO implement this test
 
     @Test
     void shouldNotAddOverlappingDateRangeStartDate() {
-    }
+    }   // TODO implement this test
 
     @Test
     void shouldNotAddOverlappingDateRangeEndDate() {
@@ -101,9 +112,7 @@ class ReservationServiceTest {
 
     @Test
     void shouldUpdate() {
-
-
-
+        //TODO implement this
     }
 
     @Test
