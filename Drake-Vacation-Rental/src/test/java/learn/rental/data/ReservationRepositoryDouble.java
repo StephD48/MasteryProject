@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ReservationRepositoryDouble implements ReservationRepository {
 
@@ -33,22 +32,25 @@ public class ReservationRepositoryDouble implements ReservationRepository {
 
     @Override
     public List<Reservation> findByHost(String hostId) {
-        return reservations.stream()
-                .collect(Collectors.toList());
+        return new ArrayList<>(reservations);
     }
 
     @Override
     public Reservation add(Reservation reservation) {
         reservation.setReservationId(reservations.size() + 1);
-        reservation.add(reservation);
+        reservations.add(reservation);
         return reservation;
     }
 
     @Override
     public boolean update(Reservation reservation) {
-        for(int i = 0; i < reservations.size(); i++) {
-            if(reservation.get(i).getReservationId() == reservation.getReservationId()) {
-                reservation.set(i, reservation);
+        for (Reservation r : reservations) {
+            if (r.getReservationId() == reservation.getReservationId()) {
+                r.setStartDate(reservation.getStartDate());
+                r.setEndDate(reservation.getEndDate());
+                r.setTotal(reservation.getTotal());
+                r.setHost(reservation.getHost());
+                r.setGuest(reservation.getGuest());
                 return true;
             }
         }
@@ -57,7 +59,13 @@ public class ReservationRepositoryDouble implements ReservationRepository {
 
     @Override
     public boolean delete(Reservation reservation) throws DataException {
-        return reservations.remove(reservation);
+            for (Reservation r : reservations) {
+                if (r.getReservationId() == reservation.getReservationId()) {
+                    reservations.remove(r);
+                    return true;
+                }
+            }
+            return false;
     }
 
 

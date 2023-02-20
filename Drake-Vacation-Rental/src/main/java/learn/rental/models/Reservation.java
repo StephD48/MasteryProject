@@ -30,6 +30,8 @@ public class Reservation {
 
     }
 
+    public Reservation(LocalDate now, LocalDate plusDays, BigDecimal bigDecimal, Host host, Guest guest663) {
+    }
 
 
     public int getReservationId() {
