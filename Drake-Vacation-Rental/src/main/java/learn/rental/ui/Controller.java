@@ -169,7 +169,8 @@ public class Controller {
                 .findFirst()
                 .orElse(null);
         if (reservation == null) {
-            results.addErrorMessage("Reservation not found");
+            view.displayStatus(false, "Reservation not found");
+            return;
         }
 
         LocalDate newStartDate = view.getStartDate();
