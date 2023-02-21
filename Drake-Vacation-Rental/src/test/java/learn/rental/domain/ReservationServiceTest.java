@@ -51,7 +51,6 @@ class ReservationServiceTest {
         assertTrue(all.contains(addedReservation));
     }
 
-
     @Test
     void shouldNotAddNull() throws DataException {
         Result<Reservation> result = service.add(null);
@@ -60,25 +59,21 @@ class ReservationServiceTest {
     }
 
     @Test
-    void shouldNotAddNullHost() {
-        //TODO implement test
-    }
-
-    // stretch goal?
-    @Test
-    void shouldNotAddUnknownHost() {
-        // TODO implement this test
+    void shouldNotAddNullHost() throws DataException {
+            Reservation reservation = new Reservation(
+                    4, LocalDate.parse("2023-11-01"), LocalDate.parse("2023-11-03"),
+                    new BigDecimal("500"), null, GuestRepositoryDouble.GUEST_663);
+            List<Reservation> reservations = service.findByHost(HostRepositoryDouble.HOST.getHostId());
+            assertFalse(reservations.contains(reservation));
     }
 
     @Test
-    void shouldNotAddNullGuest() {
-        // TODO implement this test
-    }
-
-    // stretch goal?
-    @Test
-    void shouldNotAddUnknownGuest() {
-        // TODO implement this test
+    void shouldNotAddNullGuest() throws DataException {
+        Reservation reservation = new Reservation(
+                4, LocalDate.parse("2023-11-01"), LocalDate.parse("2023-11-03"),
+                new BigDecimal("500"), HostRepositoryDouble.HOST, null);
+        List<Reservation> reservations = service.findByHost(HostRepositoryDouble.HOST.getHostId());
+        assertFalse(reservations.contains(reservation));
     }
 
     @Test
@@ -141,7 +136,8 @@ class ReservationServiceTest {
         assertTrue(success);
 
         List<Reservation> all = repository.findByHost(HostRepositoryDouble.HOST.getHostId());
-        assertEquals(3, all.size());
+        assertEquals(4, all.size());
+
     }
 
     @Test
@@ -160,7 +156,7 @@ class ReservationServiceTest {
         boolean success = repository.update(updatedReservation);
         assertFalse(success);
         List<Reservation> all = repository.findByHost(HostRepositoryDouble.HOST.getHostId());
-        assertEquals(3, all.size());
+        assertEquals(4, all.size());
 
     }
 

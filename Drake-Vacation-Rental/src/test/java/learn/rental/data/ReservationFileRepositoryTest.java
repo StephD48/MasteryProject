@@ -75,15 +75,15 @@ class ReservationFileRepositoryTest {
 
     }
 
-    @Test
+    @Test  //TODO Fix this test
     void shouldUpdate() throws DataException {
-        Reservation reservation = repository.findByHost("1").get(0);
+        Reservation reservation = repository.findByHost("3").get(0);
         reservation.setTotal(new BigDecimal("500"));
 
         boolean success = repository.update(reservation);
 
         assertTrue(success);
-        Reservation updated = repository.findByHost("1").get(0);
+        Reservation updated = repository.findByHost("3").get(0);
         assertEquals(new BigDecimal("500"), updated.getTotal());
     }
 
