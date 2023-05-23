@@ -1,4 +1,4 @@
-# MasteryProject
+# Java Mastery Project
 Utilized my Java Fundamental skills to design, implement, and test an application that allows a user to reserve accommodations 
 for a guest with a host. Drake-Vacation-Rental is similar to Airbnb. A guest chooses a place to stay for a specific date range. 
 If the host location is available, it may be reserved by the guest. Reserved locations are not available to other guests during reserved dates.
